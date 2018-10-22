@@ -12,7 +12,7 @@ with open('key', 'r') as f:
     key = f.read()
 url = "http://api.telegram.org/bot"+key+"/"
 hostname = "hoster"
-port = os.getenv("PORT")
+port = os.environ['PORT']
 
 
 # get url of a neko img
