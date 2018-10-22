@@ -7,7 +7,9 @@ from bottle import run, route, template
 
 
 @route('/')
+def hello():
     return "Hello"
+
 
 # get api key from file
 with open('key', 'r') as f:
