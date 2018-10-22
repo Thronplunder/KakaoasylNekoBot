@@ -42,7 +42,7 @@ def getJSON(url):
 
 # get only new telegram server answers as json
 def getUpdates(offset=None):
-    localUrl = url+'getUpdates?timeout=40&allowed_updates=["message"]'
+    localUrl = url+'getUpdates?timeout=25&allowed_updates=["message"]'
     if offset:
         localUrl += '&offset={}'.format(offset)
     js = getJSON(localUrl)
