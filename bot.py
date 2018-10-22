@@ -1,3 +1,5 @@
+#!bin/python
+
 import nekos
 import requests
 import time
