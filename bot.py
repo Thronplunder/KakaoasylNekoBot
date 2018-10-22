@@ -3,7 +3,7 @@ import time
 import requests
 import json
 import os
-from bottle import run, route, request as bottle_request
+from bottle import run, post, get, response,  route, request as bottle_request
 
 
 # get api key from file
@@ -96,13 +96,19 @@ def main():
     sender = getSender(data)
     message = getMessage(data)
 
-    if message contains '/neko':
+    if '/neko' in message:
         sendImage(chatID, getNeko())
-    if message contains '/shibe':
+    if '/shibe' in message:
         sendImage(chatID, getShibe())
-    if message contains 'inspire':
+    if '/inspire' in message:
         sendImage(chatID, getInspiro())
     return response
+
+
+@get('/')
+def answer():
+    return response
+
 
 if __name__ == '__main__':
     run(name = hostname, port=int(port), debug=True)
