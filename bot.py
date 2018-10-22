@@ -3,9 +3,11 @@ import requests
 import time
 import json
 import os
-import socketserver
-import http.server
+from bottle import run, route, template
 
+
+@route('/')
+    return "Hello"
 
 # get api key from file
 with open('key', 'r') as f:
@@ -73,11 +75,7 @@ def sendImage(chatID, imageUrl):
 
 def main():
     lastUpdate = None
-    print(type(port))
-    handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer((hostname, int(port)), handler) as httpd:
-        httpd.serveForever()
-
+    run(hostname, int(port))
     # make it run indefinitely
     while(True):
         print("waiting for updates")
