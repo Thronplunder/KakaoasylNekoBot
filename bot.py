@@ -1,9 +1,10 @@
+#!bin/python
 import nekos
 import requests
 import time
 import json
 import os
-from bottle import run, route, template
+from bottle import run, route
 
 
 @route('/')
@@ -77,7 +78,6 @@ def sendImage(chatID, imageUrl):
 
 def main():
     lastUpdate = None
-    run(hostname, int(port))
     # make it run indefinitely
     while(True):
         print("waiting for updates")
@@ -116,4 +116,5 @@ def main():
 
 
 if __name__ == '__main__':
+    run(name = hostname, port=int(port))
     main()
