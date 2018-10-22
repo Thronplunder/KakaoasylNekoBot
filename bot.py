@@ -1,19 +1,19 @@
 import nekos
-import requests
 import time
+import requests
 import json
 import os
-from bottle import run, route
-
-
-@route('/')
-def hello():
-    return "Hello"
+from bottle import run, route, request as bottle_request
 
 
 # get api key from file
+"""
 with open('key', 'r') as f:
     key = f.read()
+    """
+
+# get api key from environment variable
+key = os.environ['APIKEY']
 url = "http://api.telegram.org/bot"+key+"/"
 hostname = "hoster"
 port = os.environ['PORT']
@@ -26,7 +26,7 @@ def getNeko():
 
 # get url for a shibe img
 def getShibe():
-    response = requests.get('http://shibe.online/api/shibes',  params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
+    response = bottle_request.get('http://shibe.online/api/shibes',  params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
     return response.json()[0]
 
 
@@ -68,52 +68,41 @@ def getLastUpdateID(updates):
         return max(updateIDS)
 
 
+def getChatID(data):
+    id = data['message']['chat']['id']
+    return id
+
+
+def getMessage(data):
+    message = data['message']['text']
+    return message
+
+
+def getSender(data):
+    sender = data['message']['from']['first_name']
+
+
 # send an image a telegram chat
 def sendImage(chatID, imageUrl):
-    newURL = url + 'sendPhoto?chat_id={0}&photo={1}'.format(chatID, imageUrl)
+    newURL = url + 'sendPhoto'.format(chatID, imageUrl)
     print(newURL)
-    requests.get(newURL)
+    requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
 
+@post('/'+key)
 def main():
-    lastUpdate = None
-    # make it run indefinitely
-    while(True):
-        print("waiting for updates")
-        updates = getUpdates(lastUpdate)
-        try:
-            updates['result']
-        except Exception as e:
-            print(updates)
-        # test if there are actual updates then do some shit
-        if (len(updates['result']) >= 1):
-            try:
-                lastUpdate = getLastUpdateID(updates) + 1
-            except Exception as e:
-                for update in updates['result']:
-                    print(update)
-                print(e)
-            for update in updates['result']:
-                try:
-                    # post some messages for debugging
-                    text = update['message']['text']
-                    chatID = update['message']['chat']['id']
-                    sender = update['message']['from']['first_name']
-                    print(sender + ": " + text)
+    data = bottle_request.json
+    chatID = getChatID(data)
+    sender = getSender(data)
+    message = getMessage(data)
 
-                    # send the pictures if the right command was sent
-                    if "/neko" in text:
-                        sendImage(chatID, getNeko())
-                    if '/shibe' in text:
-                        sendImage(chatID, getShibe())
-                    if '/inspire' in text:
-                        sendImage(chatID, getInspiro())
-
-                except Exception as e:
-                    print(e)
-        time.sleep(0.5)
-
+    if message contains '/neko':
+        sendImage(chatID, getNeko())
+    if message contains '/shibe':
+        sendImage(chatID, getShibe())
+    if message contains 'inspire':
+        sendImage(chatID, getInspiro())
+    return response
 
 if __name__ == '__main__':
     run(name = hostname, port=int(port), debug=True)
-    main()
