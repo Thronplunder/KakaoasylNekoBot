@@ -91,6 +91,7 @@ def sendImage(chatID, imageUrl):
 
 @post('/'+key)
 def main():
+    """
     data = bottle_request.json
     chatID = getChatID(data)
     sender = getSender(data)
@@ -103,7 +104,7 @@ def main():
     if '/inspire' in message:
         sendImage(chatID, getInspiro())
     return response
-
+    """
 
 @get('/')
 def answer():
