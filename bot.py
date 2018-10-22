@@ -92,6 +92,7 @@ def sendImage(chatID, imageUrl):
 @post('/'+key)
 def main():
     data = bottle_request.json
+    """
     if data['ok'] == 'true':
         chatID = getChatID(data)
         sender = getSender(data)
@@ -106,6 +107,7 @@ def main():
         return response
     else:
         print(data)
+        """
 
 @get('/')
 def answer():
