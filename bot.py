@@ -74,7 +74,7 @@ def sendImage(chatID, imageUrl):
 def main():
     lastUpdate = None
     handler = http.server.SimpleHTTPRequestHandler
-    with SocketServer.TCPServer((hostname, port), handler) as httpd:
+    with socketserver.TCPServer((hostname, port), handler) as httpd:
         httpd.serveForever()
 
     # make it run indefinitely
