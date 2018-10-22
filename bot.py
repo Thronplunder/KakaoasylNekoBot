@@ -3,13 +3,8 @@ import requests
 import time
 import json
 import os
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
-
-
-class requestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
+import http.server
 
 
 # get api key from file
@@ -78,8 +73,9 @@ def sendImage(chatID, imageUrl):
 
 def main():
     lastUpdate = None
-    mServer = HTTPServer(hostname, port, requestHandler)
-    mServer.serveForever()
+    handler = http.server.SimpleHTTPRequestHandler
+    with SocketServer.TCPServer((hostname, port), handler) as httpd:
+        httpd.serveForever()
 
     # make it run indefinitely
     while(True):
