@@ -75,7 +75,7 @@ def main():
     lastUpdate = None
     print(type(port))
     handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer((hostname, port), handler) as httpd:
+    with socketserver.TCPServer((hostname, int(port)), handler) as httpd:
         httpd.serveForever()
 
     # make it run indefinitely
