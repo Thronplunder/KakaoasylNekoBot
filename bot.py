@@ -91,20 +91,21 @@ def sendImage(chatID, imageUrl):
 
 @post('/'+key)
 def main():
-    """
     data = bottle_request.json
-    chatID = getChatID(data)
-    sender = getSender(data)
-    message = getMessage(data)
+    if data['ok'] == 'true':
+        chatID = getChatID(data)
+        sender = getSender(data)
+        message = getMessage(data)
 
-    if '/neko' in message:
-        sendImage(chatID, getNeko())
-    if '/shibe' in message:
-        sendImage(chatID, getShibe())
-    if '/inspire' in message:
-        sendImage(chatID, getInspiro())
-    return response
-    """
+        if '/neko' in message:
+            sendImage(chatID, getNeko())
+        if '/shibe' in message:
+            sendImage(chatID, getShibe())
+        if '/inspire' in message:
+            sendImage(chatID, getInspiro())
+        return response
+    else:
+        print(data)
 
 @get('/')
 def answer():
