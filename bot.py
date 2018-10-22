@@ -73,7 +73,7 @@ def sendImage(chatID, imageUrl):
 
 def main():
     lastUpdate = None
-    print("serverPort: " + int(port))
+    print(type(port))
     handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer((hostname, port), handler) as httpd:
         httpd.serveForever()
