@@ -1,4 +1,3 @@
-#!bin/python
 import nekos
 import requests
 import time
@@ -116,5 +115,5 @@ def main():
 
 
 if __name__ == '__main__':
-    run(name = hostname, port=int(port))
+    run(name = hostname, port=int(port), debug=True)
     main()
