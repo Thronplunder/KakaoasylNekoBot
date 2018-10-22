@@ -15,7 +15,7 @@ with open('key', 'r') as f:
 # get api key from environment variable
 key = os.environ['APIKEY']
 url = "http://api.telegram.org/bot"+key+"/"
-hostname = "hoster"
+hostname = "kakaoasylbot.herokuapp.com"
 port = os.environ['PORT']
 
 
