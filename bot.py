@@ -99,9 +99,12 @@ def sendImage(chatID, imageUrl):
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
 
+lastData = ""
+
+
 @app.route('/')
 def hello():
-    return "Hello World"
+    return lastData
 
 
 @app.route('/'+key)
@@ -122,3 +125,4 @@ def handle():
         else:
             print(data)
     print(request.get_json())
+    lastData = request.getJSON()
