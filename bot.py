@@ -35,7 +35,7 @@ def getNeko():
 
 # get url for a shibe img
 def getShibe():
-    response = bottle_request.get('http://shibe.online/api/shibes',  params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
+    response = requests.get('http://shibe.online/api/shibes',  params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
     return response.json()[0]
 
 
@@ -89,6 +89,7 @@ def getMessage(data):
 
 def getSender(data):
     sender = data['message']['from']['first_name']
+    return sender
 
 
 # send an image a telegram chat
@@ -105,10 +106,10 @@ def hello():
 
 
 
-
+"""
 def main():
     # data = bottle_request.json
-    """
+
     if data['ok'] == 'true':
         chatID = getChatID(data)
         sender = getSender(data)
@@ -127,8 +128,9 @@ def main():
 @get('/')
 def answer():
     return response
-"""
+
 
 
 if __name__ == '__main__':
     1+1
+    """
