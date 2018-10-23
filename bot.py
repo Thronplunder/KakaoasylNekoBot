@@ -45,36 +45,11 @@ def getInspiro():
     return response.text
 
 
-# get data from telegram server
-def getData(url):
-    response = requests.get(url)
-    localData = response.content.decode('utf8')
-    return localData
-
-
-# extract jason from telegram server answer
-def getJSON(url):
-    localdata = getData(url)
-    jsonData = json.loads(localdata)
-    return jsonData
-
-
-# get only new telegram server answers as json
-def getUpdates(offset=None):
-    localUrl = url+'getUpdates?timeout=25&allowed_updates=["message"]'
-    if offset:
-        localUrl += '&offset={}'.format(offset)
-    js = getJSON(localUrl)
-    return js
-
-
-# get the newest update id from the array of messages
-def getLastUpdateID(updates):
-    if len(updates) > 0:
-        updateIDS = []
-        for update in updates['result']:
-            updateIDS.append(int(update['update_id']))
-        return max(updateIDS)
+# post help
+def postHelpText(chatID):
+    text = "The bot supports the following commands: \n    - /neko: posts a random neko picture \n    - /shibe: posts a random shibe picture \n    - /inspire: posts a random inspirational quote"
+    newUrl = url+"sendMessage"
+    requests.get(newUrl, {'chat_id':chatID, 'text': text, 'parse_mode':'Markdown'})
 
 
 def getChatID(data):
@@ -92,19 +67,23 @@ def getSender(data):
     return sender
 
 
+def getSenderID(data):
+    senderID = data['message']['from']['id']
+    return senderID
+
+
 # send an image a telegram chat
 def sendImage(chatID, imageUrl):
-    newURL = url + 'sendPhoto'.format(chatID, imageUrl)
+    newURL = url + 'sendPhoto'
     print(newURL)
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
 
-lastData = "first"
 
 
 @app.route('/')
 def hello():
-    return lastData
+    return "Hello this is Bot"
 
 
 @app.route('/'+key, methods=['GET', 'POST'])
@@ -116,13 +95,17 @@ def handle():
         chatID = getChatID(data)
         sender = getSender(data)
         message = getMessage(data)
+        senderID = getSenderID(data)
+        if message['message']['from']['is_bot'] == False:
 
-        if '/neko' in message:
-            sendImage(chatID, getNeko())
-        if '/shibe' in message:
-            sendImage(chatID, getShibe())
-        if '/inspire' in message:
-            sendImage(chatID, getInspiro())
+            if '/neko' in message:
+                sendImage(chatID, getNeko())
+            if '/shibe' in message:
+                sendImage(chatID, getShibe())
+            if '/inspire' in message:
+                sendImage(chatID, getInspiro())
+            if '/help' in message:
+                postHelpText(chatID)
     else:
         print(data)
     return "ok"
