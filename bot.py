@@ -3,7 +3,16 @@ import time
 import requests
 import json
 import os
-from bottle import run, post, get, response,  route, request as bottle_request
+import gevent
+from flask import Flask, render_template
+from flask_sockets import Sockets
+
+# flask app
+app = Flask(__name__)
+app.debug = 'Debug' in os.environ
+
+# sockets
+socket = Sockets(app)
 
 
 # get api key from file
@@ -15,7 +24,7 @@ with open('key', 'r') as f:
 # get api key from environment variable
 key = os.environ['APIKEY']
 url = "http://api.telegram.org/bot"+key+"/"
-hostname = "kakaoasylbot.herokuapp.com"
+hostname = "hoster"
 port = os.environ['PORT']
 
 
@@ -89,10 +98,16 @@ def sendImage(chatID, imageUrl):
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
 
-@post('/'+key)
+@app.route('/')
+def hello():
+    return "Hello World"
+
+
+
+
+
 def main():
-    data = bottle_request.json
-    print(data)
+    # data = bottle_request.json
     """
     if data['ok'] == 'true':
         chatID = getChatID(data)
@@ -108,12 +123,12 @@ def main():
         return response
     else:
         print(data)
-        """
 
 @get('/')
 def answer():
     return response
+"""
 
 
 if __name__ == '__main__':
-    run(name = hostname, port=int(port), debug=True)
+    1+1
