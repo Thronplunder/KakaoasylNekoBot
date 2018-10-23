@@ -112,6 +112,8 @@ def handle():
     if request.method == 'POST':
         data = request.get_json()
         lastData = request.data
+        print(data)
+        """
         if data['ok'] == 'true':
             chatID = getChatID(data)
             sender = getSender(data)
@@ -125,4 +127,5 @@ def handle():
                 sendImage(chatID, getInspiro())
         else:
             print(data)
+            """
     print(request.get_json())
