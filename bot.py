@@ -99,7 +99,7 @@ def sendImage(chatID, imageUrl):
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
 
-lastData = ""
+lastData = "first"
 
 
 @app.route('/')
@@ -129,3 +129,4 @@ def handle():
             print(data)
             """
     print(request.get_json())
+    return "ok"
