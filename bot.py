@@ -104,7 +104,22 @@ def hello():
     return "Hello World"
 @app.route('/'+key)
 def handle():
-    print(request.data)
+    if(request.method = 'POST'):
+        data = request.get_json()
+        if data['ok'] == 'true':
+            chatID = getChatID(data)
+            sender = getSender(data)
+            message = getMessage(data)
+
+            if '/neko' in message:
+                sendImage(chatID, getNeko())
+            if '/shibe' in message:
+                sendImage(chatID, getShibe())
+            if '/inspire' in message:
+                sendImage(chatID, getInspiro())
+        else:
+            print(data)
+    print(request.get_json())
 
 
 
