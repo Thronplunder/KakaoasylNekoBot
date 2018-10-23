@@ -117,12 +117,12 @@ def handle():
         sender = getSender(data)
         message = getMessage(data)
 
-            if '/neko' in message:
-                sendImage(chatID, getNeko())
-            if '/shibe' in message:
-                sendImage(chatID, getShibe())
-            if '/inspire' in message:
-                sendImage(chatID, getInspiro())
-        else:
-            print(data)
+        if '/neko' in message:
+            sendImage(chatID, getNeko())
+        if '/shibe' in message:
+            sendImage(chatID, getShibe())
+        if '/inspire' in message:
+            sendImage(chatID, getInspiro())
+    else:
+        print(data)
     return "ok"
