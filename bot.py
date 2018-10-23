@@ -102,9 +102,11 @@ def sendImage(chatID, imageUrl):
 @app.route('/')
 def hello():
     return "Hello World"
+
+
 @app.route('/'+key)
 def handle():
-    if(request.method = 'POST'):
+    if request.method == 'POST':
         data = request.get_json()
         if data['ok'] == 'true':
             chatID = getChatID(data)
@@ -120,34 +122,3 @@ def handle():
         else:
             print(data)
     print(request.get_json())
-
-
-
-"""
-def main():
-    # data = bottle_request.json
-
-    if data['ok'] == 'true':
-        chatID = getChatID(data)
-        sender = getSender(data)
-        message = getMessage(data)
-
-        if '/neko' in message:
-            sendImage(chatID, getNeko())
-        if '/shibe' in message:
-            sendImage(chatID, getShibe())
-        if '/inspire' in message:
-            sendImage(chatID, getInspiro())
-        return response
-    else:
-        print(data)
-
-@get('/')
-def answer():
-    return response
-
-
-
-if __name__ == '__main__':
-    1+1
-    """
