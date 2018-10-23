@@ -47,7 +47,7 @@ def getInspiro():
 
 # post help
 def postHelpText(chatID):
-    text = "The bot supports the following commands: \n    - /neko: posts a random neko picture \n    - /shibe: posts a random shibe picture \n    - /inspire: posts a random inspirational quote"
+    text = "The bot supports the following commands: \n \n    - /neko: posts a random neko picture \n    - /shibe: posts a random shibe picture \n    - /inspire: posts a random inspirational quote"
     newUrl = url+"sendMessage"
     requests.get(newUrl, {'chat_id':chatID, 'text': text, 'parse_mode':'Markdown'})
 
@@ -95,23 +95,24 @@ def hello():
 def handle():
     if request.method == 'POST':
         data = request.get_json()
-        print(data)
-        chatID = getChatID(data)
-        sender = getSender(data)
-        message = getMessage(data)
-        senderID = getSenderID(data)
-        if data['message']['from']['is_bot'] == False:
+        try:
+            chatID = getChatID(data)
+            # sender = getSender(data)
+            message = getMessage(data)
+            # senderID = getSenderID(data)
+            if data['message']['from']['is_bot'] is False:
 
-            if '/neko' in message:
-                sendImage(chatID, getNeko())
-            if '/shibe' in message:
-                sendImage(chatID, getShibe())
-            if '/inspire' in message:
-                sendImage(chatID, getInspiro())
-            if '/help' in message:
-                postHelpText(chatID)
-            if '/lorenz' in message:
-                sendLorenz(chatID)
-    else:
-        print(data)
+                if '/neko' in message:
+                    sendImage(chatID, getNeko())
+                if '/shibe' in message:
+                    sendImage(chatID, getShibe())
+                if '/inspire' in message:
+                    sendImage(chatID, getInspiro())
+                if '/help' in message:
+                    postHelpText(chatID)
+                if '/lorenz' in message:
+                    sendLorenz(chatID)
+        except Exception as e:
+            print(data)
+            print(e)
     return "ok"
