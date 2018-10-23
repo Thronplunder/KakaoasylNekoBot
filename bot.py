@@ -102,7 +102,9 @@ def sendImage(chatID, imageUrl):
 @app.route('/')
 def hello():
     return "Hello World"
-
+@app.route('/'+key)
+def handle():
+    print(request.data)
 
 
 
