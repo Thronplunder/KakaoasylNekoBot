@@ -4,7 +4,7 @@ import requests
 import json
 import os
 import gevent
-from flask import Flask, render_template
+from flask import Flask, request
 from flask_sockets import Sockets
 
 # flask app
