@@ -113,7 +113,6 @@ def handle():
         data = request.get_json()
         lastData = request.data
         print(data)
-        """
         if data['ok'] == 'true':
             chatID = getChatID(data)
             sender = getSender(data)
@@ -128,5 +127,4 @@ def handle():
         else:
             print(data)
             """
-    print(request.get_json())
     return "ok"
