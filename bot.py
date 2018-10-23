@@ -90,13 +90,12 @@ def hello():
 def handle():
     if request.method == 'POST':
         data = request.get_json()
-        lastData = request.data
         print(data)
         chatID = getChatID(data)
         sender = getSender(data)
         message = getMessage(data)
         senderID = getSenderID(data)
-        if message['message']['from']['is_bot'] == False:
+        if data['message']['from']['is_bot'] == False:
 
             if '/neko' in message:
                 sendImage(chatID, getNeko())
