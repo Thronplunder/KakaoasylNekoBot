@@ -113,10 +113,9 @@ def handle():
         data = request.get_json()
         lastData = request.data
         print(data)
-        if data['ok'] == 'true':
-            chatID = getChatID(data)
-            sender = getSender(data)
-            message = getMessage(data)
+        chatID = getChatID(data)
+        sender = getSender(data)
+        message = getMessage(data)
 
             if '/neko' in message:
                 sendImage(chatID, getNeko())
@@ -126,5 +125,4 @@ def handle():
                 sendImage(chatID, getInspiro())
         else:
             print(data)
-            """
     return "ok"
