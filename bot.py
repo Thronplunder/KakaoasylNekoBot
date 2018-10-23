@@ -23,7 +23,7 @@ with open('key', 'r') as f:
 
 # get api key from environment variable
 key = os.environ['APIKEY']
-url = "http://api.telegram.org/bot"+key+"/"
+url = "https://api.telegram.org/bot"+key+"/"
 hostname = "hoster"
 port = os.environ['PORT']
 
@@ -125,4 +125,4 @@ def handle():
         else:
             print(data)
     print(request.get_json())
-    lastData = request.getJSON()
+    lastData = request.data
