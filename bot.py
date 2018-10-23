@@ -107,10 +107,11 @@ def hello():
     return lastData
 
 
-@app.route('/'+key)
+@app.route('/'+key, methods=['GET', 'POST'])
 def handle():
     if request.method == 'POST':
         data = request.get_json()
+        lastData = request.data
         if data['ok'] == 'true':
             chatID = getChatID(data)
             sender = getSender(data)
@@ -125,4 +126,3 @@ def handle():
         else:
             print(data)
     print(request.get_json())
-    lastData = request.data
