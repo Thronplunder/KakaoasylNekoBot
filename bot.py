@@ -78,6 +78,11 @@ def sendImage(chatID, imageUrl):
     print(newURL)
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
+#send a lorenz
+def sendLorenz(chatID):
+    newUrl = url + 'sendPhoto'
+    requests.get(newUrl, {'chat_id': chatID, 'photo'; 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg', 'caption': 'Ähm Entschuldigung, was machen sie da?'}
+
 
 
 
@@ -105,6 +110,8 @@ def handle():
                 sendImage(chatID, getInspiro())
             if '/help' in message:
                 postHelpText(chatID)
+            if '/lorenz' in message:
+                 sendLorenz(chatID)
     else:
         print(data)
     return "ok"
