@@ -35,21 +35,27 @@ def getNeko():
 
 # get url for a shibe img
 def getShibe():
-    response = requests.get('http://shibe.online/api/shibes',  params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
+    response = requests.get('http://shibe.online/api/shibes',
+                            params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
     return response.json()[0]
 
 
 # get inspirobot image
 def getInspiro():
-    response = requests.get('http://inspirobot.me/api', params={'generate': 'true'})
+    response = requests.get('http://inspirobot.me/api',
+                            params={'generate': 'true'})
     return response.text
 
 
 # post help
 def postHelpText(chatID):
-    text = "The bot supports the following commands: \n \n    - /neko: posts a random neko picture \n    - /shibe: posts a random shibe picture \n    - /inspire: posts a random inspirational quote"
+    text = '''The bot supports the following commands:  \n \n
+    - /neko: posts a random neko picture \n
+    - /shibe: posts a random shibe picture \n
+    - /inspire: posts a random inspirational quote'''
     newUrl = url+"sendMessage"
-    requests.get(newUrl, {'chat_id':chatID, 'text': text, 'parse_mode':'Markdown'})
+    requests.get(newUrl, {'chat_id': chatID,
+                          'text': text, 'parse_mode': 'Markdown'})
 
 
 def getChatID(data):
@@ -78,12 +84,13 @@ def sendImage(chatID, imageUrl):
     print(newURL)
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
 
-#send a lorenz
+
+# send a lorenz
 def sendLorenz(chatID):
     newUrl = url + 'sendPhoto'
-    requests.get(newUrl, {'chat_id': chatID, 'photo': 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg', 'caption': 'Ähm Entschuldigung, was machen sie da?'})
-
-
+    requests.get(newUrl, {'chat_id': chatID,
+                          'photo': 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg',
+                          'caption': 'Ähm Entschuldigung, was machen sie da?'})
 
 
 @app.route('/')
@@ -95,7 +102,7 @@ def hello():
 def handle():
     if request.method == 'POST':
         data = request.get_json()
-        try:
+        if 'text' in data['message']:
             chatID = getChatID(data)
             # sender = getSender(data)
             message = getMessage(data)
@@ -112,7 +119,6 @@ def handle():
                     postHelpText(chatID)
                 if '/lorenz' in message:
                     sendLorenz(chatID)
-        except Exception as e:
+        else:
             print(data)
-            print(e)
     return "ok"
