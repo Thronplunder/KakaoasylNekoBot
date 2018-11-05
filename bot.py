@@ -4,6 +4,8 @@ import requests
 import json
 import os
 import gevent
+import random
+import datetime
 from flask import Flask, request
 from flask_sockets import Sockets
 from urllib.parse import urljoin
@@ -13,6 +15,22 @@ BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
 
 BOOBS_API = 'http://api.oboobs.ru/noise/1'
 BOOBS_MEDIA_BASE = 'http://media.oboobs.ru/'
+
+BOOB_LEFT_SIDES = (
+        "{", "(", "[", "\\"
+        )
+
+BOOB_RIGHT_SIDES = (
+        "}", ")", "]", "/",
+        )
+
+BOOB_CRACKS = (
+        "y", "Y", "/\\", "ㅅ", ")(", "][", "}{", ")(.)(",
+        )
+
+BOOB_NIPPLES = (
+        "o", ".", "O", "0", "。", "+", "p", "-", "*", "•", "^", "°", "○",
+        )
 
 
 # flask app
@@ -34,6 +52,21 @@ key = os.environ['APIKEY']
 url = "https://api.telegram.org/bot"+key+"/"
 hostname = "hoster"
 port = os.environ['PORT']
+
+
+def gen_ascii_boobs():
+    """ generate ascii boob """
+    left_side = random.choice(BOOB_LEFT_SIDES)
+    right_side = random.choice(BOOB_RIGHT_SIDES)
+    crack = random.choice(BOOB_CRACKS)
+    nipple = random.choice(BOOB_NIPPLES)
+    spacing = " " * random.randint(0, 2)
+    return left_side + spacing + nipple + spacing + crack + spacing + nipple + spacing + right_side
+
+
+def is_nsfw_time():
+    current_time = datetime.datetime.now().time()
+    return current_time.hour > 18 or current_time.hour < 7
 
 
 # get url of a neko img
@@ -58,6 +91,9 @@ def getInspiro():
 
 # posts random boobies
 def getBoobies():
+    if not is_nsfw_time:
+        return (False, gen_ascii_boobs())
+
     response = requests.get(BOOBS_API)
 
     if 200 <= response.status_code < 300:
@@ -69,6 +105,10 @@ def getBoobies():
 
 # posts random butts
 def getButt():
+    if not is_nsfw_time:
+        return (False,
+                f"Sorry not butts at this time of day, but you can have some boobs\n{gen_ascii_boobs()}")
+
     response = requests.get(BUTTS_API)
 
     if 200 <= response.status_code < 300:
