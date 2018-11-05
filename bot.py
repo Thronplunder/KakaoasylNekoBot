@@ -36,7 +36,9 @@ def getNeko():
 # get url for a shibe img
 def getShibe():
     response = requests.get('http://shibe.online/api/shibes',
-                            params={'count': 1, 'urls': 'true', 'httpsUrls': 'true'})
+                            params={'count': 1,
+                                    'urls': 'true',
+                                    'httpsUrls': 'true'})
     return response.json()[0]
 
 
@@ -47,15 +49,36 @@ def getInspiro():
     return response.text
 
 
+# posts random boobies
+def getBoobies(attempts, chatID):
+    response = requests.get('http://api.oboobs.ru/noise/1')
+    if not response.json()['preview'] and attempts <= 5:
+        getBoobies(attempts + 1)
+    if attempts > 5:
+        sendMessage(chatID, "Boobies could not be retrieved")
+    if response.json['preview']:
+        return 'media.oboobs.ru/' + response.json['preview']
+
+
+# posts random butt
+def getButt(attempts, chatID):
+    response = requests.get('http://api.obutts.ru/noise/1')
+    if not response.json()['preview'] and attempts <= 5:
+        getBoobies(attempts + 1)
+    if attempts > 5:
+        sendMessage(chatID, "Butt could not be retrieved")
+    if response.json['preview']:
+        return 'media.obutts.ru/' + response.json['preview']
+
+
 # post help
 def postHelpText(chatID):
     text = '''The bot supports the following commands:  \n \n
     - /neko: posts a random neko picture \n
     - /shibe: posts a random shibe picture \n
-    - /inspire: posts a random inspirational quote'''
-    newUrl = url+"sendMessage"
-    requests.get(newUrl, {'chat_id': chatID,
-                          'text': text, 'parse_mode': 'Markdown'})
+    - /inspire: posts a random inspirational quote \n
+    - /boobies: posts random boobies'''
+    sendMessage(chatID, text)
 
 
 def getChatID(data):
@@ -81,8 +104,13 @@ def getSenderID(data):
 # send an image a telegram chat
 def sendImage(chatID, imageUrl):
     newURL = url + 'sendPhoto'
-    print(newURL)
+    # print(newURL)
     requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
+
+
+def sendMessage(chatID, message):
+    newUrl = url + 'sendMessage'
+    requests.get(newUrl, {'chat_id': chatID, 'text': message})
 
 
 # send a lorenz
@@ -119,6 +147,8 @@ def handle():
                     postHelpText(chatID)
                 if '/lorenz' in message:
                     sendLorenz(chatID)
-        else:
-            print(data)
+                if '/boobies' in message:
+                    sendImage(chatID, getBoobies(0, getChatID))
+                if '/butt' in message:
+                    sendImage(chatID, getButt(0, chatID))
     return "ok"
