@@ -57,7 +57,7 @@ def getBoobies(attempts, chatID):
     if attempts > 5:
         sendMessage(chatID, "Boobies could not be retrieved")
     if response.json['preview']:
-        return 'media.oboobs.ru/' + response.json['preview']
+        return 'http://media.oboobs.ru/' + response.json['preview']
 
 
 # posts random butt
@@ -68,7 +68,7 @@ def getButt(attempts, chatID):
     if attempts > 5:
         sendMessage(chatID, "Butt could not be retrieved")
     if response.json['preview']:
-        return 'media.obutts.ru/' + response.json['preview']
+        return 'http://media.obutts.ru/' + response.json['preview']
 
 
 # post help
