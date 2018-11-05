@@ -6,6 +6,14 @@ import os
 import gevent
 from flask import Flask, request
 from flask_sockets import Sockets
+from urllib.parse import urljoin
+
+BUTTS_API = 'http://api.obutts.ru/noise/1'
+BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
+
+BOOBS_API = 'http://api.oboobs.ru/noise/1'
+BOOBS_MEDIA_BASE = 'http://media.oboobs.ru/'
+
 
 # flask app
 app = Flask(__name__)
@@ -48,28 +56,27 @@ def getInspiro():
                             params={'generate': 'true'})
     return response.text
 
-
 # posts random boobies
-def getBoobies(attempts, chatID):
-    response = requests.get('http://api.oboobs.ru/noise/1')
-    if not response.json()['preview'] and attempts <= 5:
-        getBoobies(attempts + 1)
-    if attempts > 5:
-        sendMessage(chatID, "Boobies could not be retrieved")
-    if response.json['preview']:
-        print(response.json()['preview'])
-        return 'http://media.oboobs.ru/' + response.json['preview']
+def getBoobies():
+    response = requests.get(BOOBS_API)
 
+    if 200 <= response.status_code < 300:
+        relative_preview_url = response.json()[0]['preview']
+        absolute_preview_url = urljoin(BOOBS_MEDIA_BASE, relative_preview_url)
+        return (True, absolute_preview_url)
+    else:
+        return (False, "Boobs are striking :(")
 
-# posts random butt
-def getButt(attempts, chatID):
-    response = requests.get('http://api.obutts.ru/noise/1')
-    if not response.json()['preview'] and attempts <= 5:
-        getBoobies(attempts + 1)
-    if attempts > 5:
-        sendMessage(chatID, "Butt could not be retrieved")
-    if response.json['preview']:
-        return 'http://media.obutts.ru/' + response.json['preview']
+# posts random butts
+def getButt():
+    response = requests.get(BUTTS_API)
+
+    if 200 <= response.status_code < 300:
+        relative_preview_url = response.json()[0]['preview']
+        absolute_preview_url = urljoin(BUTTS_MEDIA_BASE, relative_preview_url)
+        return (True, absolute_preview_url)
+    else:
+        return (False, "Butts are striking :(")
 
 
 # post help
@@ -150,7 +157,16 @@ def handle():
                 if '/lorenz' in message:
                     sendLorenz(chatID)
                 if '/boobies' in message:
-                    sendImage(chatID, getBoobies(0, getChatID))
+                    success, content = getBoobies()
+                    if success:
+                        sendImage(chatID, content)
+                    else:
+                        sendMessage(chatID, content)
+
                 if '/butt' in message:
-                    sendImage(chatID, getButt(0, chatID))
+                    success, content = getButt()
+                    if success:
+                        sendImage(chatID, content)
+                    else:
+                        sendMessage(chatID, content)
     return "ok"
