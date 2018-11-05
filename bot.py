@@ -57,6 +57,7 @@ def getBoobies(attempts, chatID):
     if attempts > 5:
         sendMessage(chatID, "Boobies could not be retrieved")
     if response.json['preview']:
+        print(response.json()['preview'])
         return 'http://media.oboobs.ru/' + response.json['preview']
 
 
@@ -77,7 +78,8 @@ def postHelpText(chatID):
     - /neko: posts a random neko picture \n
     - /shibe: posts a random shibe picture \n
     - /inspire: posts a random inspirational quote \n
-    - /boobies: posts random boobies'''
+    - /boobies: posts random boobies \n
+    - /butt: posts a random butt'''
     sendMessage(chatID, text)
 
 
