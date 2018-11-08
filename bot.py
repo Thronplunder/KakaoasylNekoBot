@@ -1,14 +1,15 @@
-import nekos
-import time
-import requests
-import json
-import os
-import gevent
-import random
+
 import datetime
-from flask import Flask, request
-from flask_sockets import Sockets
+import os
+import random
+
+from collections import namedtuple
 from urllib.parse import urljoin
+
+import requests
+import nekos
+
+from flask import Flask, request
 
 BUTTS_API = 'http://api.obutts.ru/noise/1'
 BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
@@ -17,225 +18,263 @@ BOOBS_API = 'http://api.oboobs.ru/noise/1'
 BOOBS_MEDIA_BASE = 'http://media.oboobs.ru/'
 
 BOOB_LEFT_SIDES = (
-        "{", "(", "[", "\\"
+        '{', '(', '[', '\\'
         )
 
 BOOB_RIGHT_SIDES = (
-        "}", ")", "]", "/",
+        '}', ')', ']', '/',
         )
 
 BOOB_CRACKS = (
-        "y", "Y", "/\\", "ㅅ", ")(", "][", "}{", ")(.)(",
+        'y', 'Y', '/\\', 'ㅅ', ')(', '][', '}{', ')(.)(',
         )
 
 BOOB_NIPPLES = (
-        "o", ".", "O", "0", "。", "+", "p", "-", "*", "•", "^", "°", "○",
+        'o', '.', 'O', '0', '。', '+', 'p', '-', '*', '•', '^', '°', '○',
         )
 
 MAGIC_8_BALL_ANSWERS = (
-            "It is certain.",
-            "It is decidedly so.",
-            "Without a doubt.",
-            "Yes - definitely.",
-            "You may rely on it.",
-            "As I see it, yes.",
-            "Most likely.",
-            "Outlook good.",
-            "Yes.",
-            "Signs point to yes.",
-            "Reply hazy, try again.",
-            "Ask again later.",
-            "Better not tell you now.",
-            "Cannot predict now.",
-            "Concentrate and ask again.",
-            "Don't count on it.",
-            "My reply is no.",
-            "My sources say no.",
-            "Outlook not so good.",
-            "Very doubtful.",
-            )
+        'It is certain.',
+        'It is decidedly so.',
+        'Without a doubt.',
+        'Yes - definitely.',
+        'You may rely on it.',
+        'As I see it, yes.',
+        'Most likely.',
+        'Outlook good.',
+        'Yes.',
+        'Signs point to yes.',
+        'Reply hazy, try again.',
+        'Ask again later.',
+        'Better not tell you now.',
+        'Cannot predict now.',
+        'Concentrate and ask again.',
+        'Don\'t count on it.',
+        'My reply is no.',
+        'My sources say no.',
+        'Outlook not so good.',
+        'Very doubtful.',
+        )
+
+LORENZ_URL = 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg'
+LORENZ_MSG = 'Ähm Entschuldigung, was machen sie da?'
 
 
 # flask app
-app = Flask(__name__)
-app.debug = 'Debug' in os.environ
-
-# sockets
-socket = Sockets(app)
-
-
-# get api key from file
-"""
-with open('key', 'r') as f:
-    key = f.read()
-    """
+APP = Flask(__name__)
+APP.debug = 'Debug' in os.environ
 
 # get api key from environment variable
-key = os.environ['APIKEY']
-url = "https://api.telegram.org/bot"+key+"/"
-hostname = "hoster"
-port = os.environ['PORT']
+KEY = os.environ['APIKEY']
+BASE_URL = 'https://api.telegram.org/bot'+KEY+'/'
+
+COMMANDS = {}
+
+TextMsg = namedtuple('text_msg', ['text'])
+PictureMsg = namedtuple('picture_msg', ['url', 'caption'], defaults=('',))
+
+BotCommand = namedtuple('bot_command', ['function', 'helptext'])
+
+
+def bot_command(command):
+    '''
+    Decorator for bot commands
+
+    Automatically fills the COMMANDS dict
+
+    param command: name of the command
+    '''
+
+    def wrapper(func):
+        COMMANDS[command] = BotCommand(func, func.__doc__)
+        return func
+
+    return wrapper
+
+
+def nsfw(text=''):
+    '''
+    Replaces normal function with a somewhat safe for work ascii boobs.
+
+    param text: text to prepend the ascii boobs with
+    '''
+
+    def nsfw_decorator(func):
+        def wrapper():
+            if not is_nsfw_time():
+                return TextMsg(f'{text}\n{gen_ascii_boobs()}')
+            return func()
+
+        return wrapper
+    return nsfw_decorator
 
 
 def gen_ascii_boobs():
-    """ generate ascii boob """
+    '''generate ascii boob'''
     left_side = random.choice(BOOB_LEFT_SIDES)
     right_side = random.choice(BOOB_RIGHT_SIDES)
     crack = random.choice(BOOB_CRACKS)
     nipple = random.choice(BOOB_NIPPLES)
-    spacing = " " * random.randint(0, 2)
+    spacing = ' ' * random.randint(0, 2)
     return left_side + spacing + nipple + spacing + crack + spacing + nipple + spacing + right_side
 
 
 def is_nsfw_time():
+    '''Returns true if outside of normal work ours'''
     current_time = datetime.datetime.now().time()
     return current_time.hour > 18 or current_time.hour < 7
 
 
-# get url of a neko img
-def getNeko():
-    return nekos.img('neko')
+@bot_command('neko')
+def get_neko():
+    '''post random neko picture'''
+    return PictureMsg(nekos.img('neko'))
 
 
-# get url for a shibe img
-def getShibe():
+@bot_command('shibe')
+def get_shibe():
+    '''post random shibe picture'''
     response = requests.get('http://shibe.online/api/shibes',
                             params={'count': 1,
                                     'urls': 'true',
                                     'httpsUrls': 'true'})
-    return response.json()[0]
+    return PictureMsg(response.json()[0])
 
 
-# get inspirobot image
-def getInspiro():
+@bot_command('inspire')
+def get_inspiro():
+    '''post a random inspirational quote'''
     response = requests.get('http://inspirobot.me/api',
                             params={'generate': 'true'})
-    return response.text
+    return PictureMsg(response.text)
 
-# posts random boobies
-def getBoobies():
-    if not is_nsfw_time:
-        return (False, gen_ascii_boobs())
-
+@bot_command('boobies')
+@nsfw()
+def get_boobies():
+    '''post random boobies'''
     response = requests.get(BOOBS_API)
 
     if 200 <= response.status_code < 300:
         relative_preview_url = response.json()[0]['preview']
         absolute_preview_url = urljoin(BOOBS_MEDIA_BASE, relative_preview_url)
-        return (True, absolute_preview_url)
-    else:
-        return (False, "Boobs are striking :(")
+        return PictureMsg(absolute_preview_url)
 
-# posts random butts
-def getButt():
-    if not is_nsfw_time:
-        return (False,
-                f"Sorry not butts at this time of day, but you can have some boobs\n{gen_ascii_boobs()}")
+    return TextMsg('Boobs are striking :(')
 
+@bot_command('butt')
+@nsfw('Sorry not butts at this time of day, but you can have some boobs')
+def get_butt():
+    '''post random butts'''
     response = requests.get(BUTTS_API)
 
     if 200 <= response.status_code < 300:
         relative_preview_url = response.json()[0]['preview']
         absolute_preview_url = urljoin(BUTTS_MEDIA_BASE, relative_preview_url)
-        return (True, absolute_preview_url)
-    else:
-        return (False, "Butts are striking :(")
+        return PictureMsg(absolute_preview_url)
 
-def get8Ball():
-    return random.choice(MAGIC_8_BALL_ANSWERS)
+    return TextMsg('Butts are striking :(')
 
-
-# post help
-def postHelpText(chatID):
-    text = '''The bot supports the following commands:  \n \n
-    - /neko: posts a random neko picture \n
-    - /shibe: posts a random shibe picture \n
-    - /inspire: posts a random inspirational quote \n
-    - /boobies: posts random boobies \n
-    - /butt: posts a random butt'''
-    sendMessage(chatID, text)
+@bot_command('8ball')
+def get_8_ball():
+    '''post random magic 8 ball answer'''
+    return TextMsg(random.choice(MAGIC_8_BALL_ANSWERS))
 
 
-def getChatID(data):
-    id = data['message']['chat']['id']
-    return id
+@bot_command('lorenz')
+def get_lorenz():
+    '''post lorenz'''
+    return PictureMsg(LORENZ_URL, LORENZ_MSG)
 
 
-def getMessage(data):
+@bot_command(command='help')
+def generate_help():
+    '''post help'''
+    text = 'The bot supports the following commands:\n\n'
+    for command, (_, helptext) in COMMANDS.items():
+        text += f'- /{command}: {helptext}\n'
+
+    return TextMsg(text)
+
+
+def get_chat_id(data):
+    '''extracts the chat id from a request'''
+    _id = data['message']['chat']['id']
+    return _id
+
+
+def get_message(data):
+    '''extracts the text message from a request'''
     message = data['message']['text']
     return message
 
 
-def getSender(data):
-    sender = data['message']['from']['first_name']
-    return sender
-
-
-def getSenderID(data):
-    senderID = data['message']['from']['id']
-    return senderID
-
-
 # send an image a telegram chat
-def sendImage(chatID, imageUrl):
-    newURL = url + 'sendPhoto'
-    # print(newURL)
-    requests.get(newURL, {'chat_id': chatID, 'photo': imageUrl})
+def send_image(chat_id, image_url, caption):
+    '''
+    Send image to a telegram chat
+
+    param chat_id: target chat
+    param image_url: url of the image
+    param caption: image caption
+    '''
+
+    url = BASE_URL + 'sendPhoto'
+    requests.get(url, {
+            'chat_id': chat_id,
+            'photo': image_url,
+            'caption': caption})
 
 
-def sendMessage(chatID, message):
-    newUrl = url + 'sendMessage'
-    requests.get(newUrl, {'chat_id': chatID, 'text': message})
+def send_message(chat_id, message):
+    '''
+    Send message to a telegram chat
+
+    param chat_id: target chat
+    param message: message to send
+    '''
+    url = BASE_URL + 'send_message'
+    requests.get(url, {'chat_id': chat_id, 'text': message})
 
 
-# send a lorenz
-def sendLorenz(chatID):
-    newUrl = url + 'sendPhoto'
-    requests.get(newUrl, {'chat_id': chatID,
-                          'photo': 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg',
-                          'caption': 'Ähm Entschuldigung, was machen sie da?'})
+def command_dispatch(chat_id, msg):
+    '''
+    Extracts chat commands from messages and dispatches the function call
 
+    param chatID: target chat
+    param msg: (command) message from the chat
+    '''
+    if not msg.startswith('/'):
+        return
 
-@app.route('/')
+    # get first word of message
+    command = msg.split(' ', 1)[0]
+    # remove command prefix
+    command = command.strip('/')
+
+    if command not in COMMANDS:
+        return
+
+    msg = COMMANDS[command].function()
+
+    if isinstance(msg, PictureMsg):
+        send_image(chat_id, msg.url, msg.caption)
+
+    elif isinstance(msg, TextMsg):
+        send_message(chat_id, msg.text)
+
+@APP.route('/')
 def hello():
-    return "Hello this is Bot"
+    return 'Hello this is Bot'
 
 
-@app.route('/'+key, methods=['GET', 'POST'])
+@APP.route('/'+KEY, methods=['GET', 'POST'])
 def handle():
+    '''Handles webhook requests from telegram'''
     if request.method == 'POST':
         data = request.get_json()
         if 'text' in data['message']:
-            chatID = getChatID(data)
-            # sender = getSender(data)
-            message = getMessage(data)
-            # senderID = getSenderID(data)
+            chat_id = get_chat_id(data)
+            message = get_message(data)
             if data['message']['from']['is_bot'] is False:
-
-                if '/neko' in message:
-                    sendImage(chatID, getNeko())
-                if '/shibe' in message:
-                    sendImage(chatID, getShibe())
-                if '/inspire' in message:
-                    sendImage(chatID, getInspiro())
-                if '/help' in message:
-                    postHelpText(chatID)
-                if '/lorenz' in message:
-                    sendLorenz(chatID)
-                if '/boobies' in message:
-                    success, content = getBoobies()
-                    if success:
-                        sendImage(chatID, content)
-                    else:
-                        sendMessage(chatID, content)
-
-                if '/butt' in message:
-                    success, content = getButt()
-                    if success:
-                        sendImage(chatID, content)
-                    else:
-                        sendMessage(chatID, content)
-
-                if '/8ball' in message:
-                    sendMessage(chatID, get8Ball())
-    return "ok"
+                command_dispatch(chat_id, message)
+    return 'ok'
