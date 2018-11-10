@@ -237,7 +237,7 @@ def send_message(chat_id, message):
     param chat_id: target chat
     param message: message to send
     '''
-    url = BASE_URL + 'send_message'
+    url = BASE_URL + 'sendMessage'
     requests.get(url, {'chat_id': chat_id, 'text': message})
 
 
