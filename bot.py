@@ -59,6 +59,8 @@ MAGIC_8_BALL_ANSWERS = (
 LORENZ_URL = 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg'
 LORENZ_MSG = 'Ähm Entschuldigung, was machen sie da?'
 
+WEEKEND_DAYS = (5, 6)
+
 
 # flask app
 APP = Flask(__name__)
@@ -121,8 +123,11 @@ def gen_ascii_boobs():
 
 def is_nsfw_time():
     '''Returns true if outside of normal work ours'''
-    current_time = datetime.datetime.now().time()
-    return current_time.hour > 18 or current_time.hour < 7
+    current_datetime = datetime.datetime.now()
+    current_time = current_datetime.time()
+    current_date = current_datetime.date()
+    return ((current_time.hour > 18 or current_time.hour < 7)
+            or current_date.weekday() in WEEKEND_DAYS)
 
 
 @bot_command('neko')
