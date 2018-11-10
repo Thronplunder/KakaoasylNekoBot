@@ -191,7 +191,7 @@ def get_lorenz():
     return PictureMsg(LORENZ_URL, LORENZ_MSG)
 
 
-@bot_command(command='help')
+@bot_command('help')
 def generate_help():
     '''post help'''
     text = 'The bot supports the following commands:\n\n'
