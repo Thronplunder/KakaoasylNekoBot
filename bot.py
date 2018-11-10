@@ -167,7 +167,7 @@ def get_boobies():
     return TextMsg('Boobs are striking :(')
 
 @bot_command('butt')
-@nsfw('Sorry not butts at this time of day, but you can have some boobs')
+@nsfw('Sorry, no butts at this time of day, but you can have some boobs.')
 def get_butt():
     '''post random butts'''
     response = requests.get(BUTTS_API)
