@@ -254,7 +254,7 @@ def command_dispatch(chat_id, msg):
     # get first word of message
     command = msg.split(' ', 1)[0]
     # handle targeted commands by removing '@' and everything's that follows
-    command = msg.split('@', 1)[0]
+    command = command.split('@', 1)[0]
     # remove command prefix
     command = command.strip('/')
 
