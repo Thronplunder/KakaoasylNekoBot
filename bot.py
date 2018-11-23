@@ -126,7 +126,7 @@ def is_nsfw_time():
     current_datetime = datetime.datetime.now()
     current_time = current_datetime.time()
     current_date = current_datetime.date()
-    return ((current_time.hour > 18 or current_time.hour < 7)
+    return ((current_time.hour >= 18 or current_time.hour < 7)
             or current_date.weekday() in WEEKEND_DAYS)
 
 
