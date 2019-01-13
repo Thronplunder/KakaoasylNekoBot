@@ -1,5 +1,6 @@
 
 import datetime
+import io
 import os
 import random
 
@@ -16,6 +17,10 @@ BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
 
 BOOBS_API = 'http://api.oboobs.ru/noise/1'
 BOOBS_MEDIA_BASE = 'http://media.oboobs.ru/'
+
+CATAAS_API_BASE = 'https://cataas.com/'
+CATAAS_API_IMG = urljoin(CATAAS_API_BASE, 'cat')
+CATAAS_API_GIF = urljoin(CATAAS_API_BASE, 'cat/gif')
 
 BOOB_LEFT_SIDES = (
         '{', '(', '[', '\\'
@@ -74,6 +79,8 @@ COMMANDS = {}
 
 TextMsg = namedtuple('text_msg', ['text'])
 PictureMsg = namedtuple('picture_msg', ['url', 'caption'], defaults=('',))
+PictureFileMsg = namedtuple('picture_file_msg', ['file'])
+AnimationFileMsg = namedtuple('animation_file_msg', ['file'])
 
 BotCommand = namedtuple('bot_command', ['function', 'helptext'])
 
@@ -128,6 +135,13 @@ def is_nsfw_time():
     current_date = current_datetime.date()
     return ((current_time.hour >= 18 or current_time.hour < 7)
             or current_date.weekday() in WEEKEND_DAYS)
+
+
+def get_url_io_buffer(url):
+    '''Request given url and return response content as BytesIO buffer and mime type'''
+    resp = requests.get(url)
+
+    return io.BytesIO(resp.content)
 
 
 @bot_command('neko')
@@ -191,6 +205,24 @@ def get_lorenz():
     return PictureMsg(LORENZ_URL, LORENZ_MSG)
 
 
+@bot_command('cat')
+def get_cat():
+    '''post random cat from CATAAS'''
+
+    img = get_url_io_buffer(CATAAS_API_IMG)
+
+    return PictureFileMsg(img)
+
+
+@bot_command('catgif')
+def get_catgif():
+    '''post random cat gif from CATAAS'''
+
+    img = get_url_io_buffer(CATAAS_API_GIF)
+
+    return AnimationFileMsg(img)
+
+
 @bot_command('help')
 def generate_help():
     '''post help'''
@@ -241,6 +273,36 @@ def send_message(chat_id, message):
     requests.get(url, {'chat_id': chat_id, 'text': message})
 
 
+def send_image_file(chat_id, img_file):
+    '''
+    Send image file to telegram chat
+
+    param chat_id: target chat
+    param img_file: img file as file like object
+    param mime: image mime type
+    '''
+
+    url = BASE_URL + 'sendPhoto'
+    requests.post(url, params={'chat_id': chat_id}, files={'photo': img_file})
+
+
+def send_animation_file(chat_id, animation_file):
+    '''
+    Send animation file to telegram chat
+
+    param chat_id: target chat
+    param img_file: img file as file like object
+    param mime: image mime type
+    '''
+
+    url = BASE_URL + 'sendAnimation'
+    requests.post(
+            url,
+            params={'chat_id': chat_id},
+            files={'animation': ('animaiton.gif', animation_file, 'image/gif')}
+            )
+
+
 def command_dispatch(chat_id, msg):
     '''
     Extracts chat commands from messages and dispatches the function call
@@ -268,6 +330,12 @@ def command_dispatch(chat_id, msg):
 
     elif isinstance(msg, TextMsg):
         send_message(chat_id, msg.text)
+
+    elif isinstance(msg, PictureFileMsg):
+        send_image_file(chat_id, msg.file)
+
+    elif isinstance(msg, AnimationFileMsg):
+        send_animation_file(chat_id, msg.file)
 
 @APP.route('/')
 def hello():
