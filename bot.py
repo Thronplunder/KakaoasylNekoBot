@@ -2,6 +2,7 @@
 import datetime
 import io
 import os
+import pathlib
 import random
 
 from collections import namedtuple
@@ -12,6 +13,8 @@ import nekos
 
 from flask import Flask, request
 
+SCRIPT_DIR = pathlib.Path(__file__).absolute().parent
+
 BUTTS_API = 'http://api.obutts.ru/noise/1'
 BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
 
@@ -21,6 +24,9 @@ BOOBS_MEDIA_BASE = 'http://media.oboobs.ru/'
 CATAAS_API_BASE = 'https://cataas.com/'
 CATAAS_API_IMG = urljoin(CATAAS_API_BASE, 'cat')
 CATAAS_API_GIF = urljoin(CATAAS_API_BASE, 'cat/gif')
+
+RACCOON_DB_PATH = SCRIPT_DIR / 'raccoon.db'
+RACCOON_IDS = RACCOON_DB_PATH.open().read().splitlines()
 
 BOOB_LEFT_SIDES = (
         '{', '(', '[', '\\'
@@ -221,6 +227,13 @@ def get_catgif():
     img = get_url_io_buffer(CATAAS_API_GIF)
 
     return AnimationFileMsg(img)
+
+
+@bot_command('raccoon')
+def get_raccon():
+    '''post random raccoon pic'''
+
+    return PictureMsg(random.choice(RACCOON_IDS))
 
 
 @bot_command('help')
