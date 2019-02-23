@@ -9,11 +9,12 @@ from collections import namedtuple
 from urllib.parse import urljoin
 
 import requests
-import nekos
 
 from flask import Flask, request
 
 SCRIPT_DIR = pathlib.Path(__file__).absolute().parent
+
+NEKOS_API = 'https://nekos.life/api/v2/img/neko'
 
 BUTTS_API = 'http://api.obutts.ru/noise/1'
 BUTTS_MEDIA_BASE = 'http://media.obutts.ru/'
@@ -153,7 +154,7 @@ def get_url_io_buffer(url):
 @bot_command('neko')
 def get_neko():
     '''post random neko picture'''
-    return PictureMsg(nekos.img('neko'))
+    return PictureMsg(requests.get(NEKOS_API).json()['url'])
 
 
 @bot_command('shibe')
