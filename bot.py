@@ -71,6 +71,9 @@ MAGIC_8_BALL_ANSWERS = (
 LORENZ_URL = 'www.hfm-karlsruhe.de/inmm/images/01-InMM/team/Lorenz-rainer-120x120.jpg'
 LORENZ_MSG = 'Ähm Entschuldigung, was machen sie da?'
 
+SEDUCTIVESEEDORF_URL = "https://www.hmdk-stuttgart.de/typo3temp/_processed_/csm_Portr%C3%A4t-Seedorf-1-f__002__aff54ba6e5.jpg"
+SEDUCTIVESEEDORF_MSG = "Ich zeige ihnen eben meinen verkürzten Dominantseptakkord"
+
 WEEKEND_DAYS = (5, 6)
 
 
@@ -211,6 +214,10 @@ def get_lorenz():
     '''post lorenz'''
     return PictureMsg(LORENZ_URL, LORENZ_MSG)
 
+@bot_command('seductiveseedorf')
+def get_seedorf():
+    '''post seedorf'''
+    return PictureMsg(SEDUCTIVESEEDORF_URL, SEDUCTIVESEEDORF_MSG)
 
 @bot_command('cat')
 def get_cat():
