@@ -8,11 +8,14 @@ import random
 from collections import namedtuple
 from urllib.parse import urljoin
 
+import pytz
 import requests
 
 from flask import Flask, request
 
 SCRIPT_DIR = pathlib.Path(__file__).absolute().parent
+
+TIMEZONE = pytz.timezone('Europe/Berlin')
 
 NEKOS_API = 'https://nekos.life/api/v2/img/neko'
 
@@ -139,8 +142,8 @@ def gen_ascii_boobs():
 
 
 def is_nsfw_time():
-    '''Returns true if outside of normal work ours'''
-    current_datetime = datetime.datetime.now()
+    '''Returns true if outside of normal work ours in a specific timezone'''
+    current_datetime = datetime.datetime.now(tz=TIMEZONE)
     current_time = current_datetime.time()
     current_date = current_datetime.date()
     return ((current_time.hour >= 18 or current_time.hour < 7)
