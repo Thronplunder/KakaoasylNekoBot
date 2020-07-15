@@ -7,6 +7,7 @@ import random
 
 from collections import namedtuple
 from urllib.parse import urljoin
+from functools import wraps
 
 import pytz
 import requests
@@ -122,6 +123,7 @@ def nsfw(text=''):
     '''
 
     def nsfw_decorator(func):
+        @wraps(func)
         def wrapper():
             if not is_nsfw_time():
                 return TextMsg(f'{text}\n{gen_ascii_boobs()}')
