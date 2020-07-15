@@ -379,3 +379,20 @@ def handle():
             if data['message']['from']['is_bot'] is False:
                 command_dispatch(chat_id, message)
     return 'ok'
+
+
+def update_command_list():
+    '''
+    update command list in telegram for the suggested commands feature
+    '''
+    cmds = []
+    for cmd, params in COMMANDS.items():
+        cmds.append({'command': cmd, 'description': params.helptext})
+    payload = {'commands': cmds}
+
+    url = BASE_URL + 'setMyCommands'
+    resp = requests.post(url, json=payload)
+    resp.raise_for_status()
+
+
+update_command_list()
