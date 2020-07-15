@@ -401,4 +401,7 @@ def update_command_list():
     resp.raise_for_status()
 
 
+# Sort commands list by command name
+COMMANDS = dict(sorted(COMMANDS.items(), key=lambda item: item[0]))
+
 update_command_list()
