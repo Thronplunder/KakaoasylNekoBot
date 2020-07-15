@@ -248,6 +248,12 @@ def get_raccon():
 
     return PictureMsg(random.choice(RACCOON_IDS))
 
+@bot_command('sendram')
+def sendram():
+    '''Try to send ram'''
+
+    return TextMsg('Sorry, das ist nicht möglich :(')
+
 
 @bot_command('help')
 def generate_help():
