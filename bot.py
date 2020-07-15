@@ -198,7 +198,7 @@ def get_boobies():
 @bot_command('butt')
 @nsfw('Sorry, no butts at this time of day, but you can have some boobs.')
 def get_butt():
-    '''post random butts'''
+    '''post random butt'''
     response = requests.get(BUTTS_API)
 
     if 200 <= response.status_code < 300:
@@ -216,12 +216,12 @@ def get_8_ball():
 
 @bot_command('lorenz')
 def get_lorenz():
-    '''post lorenz'''
+    '''post angry lorenz'''
     return PictureMsg(LORENZ_URL, LORENZ_MSG)
 
 @bot_command('seductiveseedorf')
 def get_seedorf():
-    '''post seedorf'''
+    '''post germany's most handsome man'''
     return PictureMsg(SEDUCTIVESEEDORF_URL, SEDUCTIVESEEDORF_MSG)
 
 @bot_command('cat')
