@@ -254,6 +254,12 @@ def sendram():
 
     return TextMsg('Sorry, das ist nicht möglich :(')
 
+@bot_command('corgi')
+def get_corgi():
+    '''post random corgi picture'''
+
+    return PictureMsg(requests.get('https://api.corgi.cam/v1/json/').json()[0])
+
 
 @bot_command('help')
 def generate_help():
